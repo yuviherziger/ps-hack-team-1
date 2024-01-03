@@ -1,19 +1,19 @@
 from typing import Dict, List
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion
 
 from job_insights.embeddings import search_similar_docs
 
-openai_client = OpenAI()
+openai_client = AsyncOpenAI()
 
 
-def get_openai_response(question: str, context_docs: List[Dict]) -> str:
+async def get_openai_response(question: str, context_docs: List[Dict]) -> str:
     context_messages = [{
         "role": "user",
         "content": "For context, here is a job posting summary: " + doc.get("summary"),
     } for doc in context_docs]
-    response: ChatCompletion = openai_client.chat.completions.create(
+    response: ChatCompletion = await openai_client.chat.completions.create(
         model="gpt-4",
         messages=[
             *context_messages,

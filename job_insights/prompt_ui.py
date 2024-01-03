@@ -1,22 +1,34 @@
 import json
 
+import asyncio
 import gradio as gr
 from gradio.themes.base import Base
+from job_insights.embeddings import search_similar_docs
+from job_insights.completions import get_openai_response
 
-from job_insights.completions import get_answer, get_openai_response
 
+def query_data(query,prompt, context_length: int = 5):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    event_loop = asyncio.get_event_loop()
 
-def query_data(query):
-    context_answer, context = get_answer(question=query, context_length=5)
+    similar_docs = event_loop.run_until_complete(search_similar_docs(query=query, limit=context_length))
+    context_answer, non_context_answer = event_loop.run_until_complete(
+        asyncio.gather(
+            get_openai_response(question=prompt, context_docs=similar_docs),
+            get_openai_response(question=prompt, context_docs=[]),
+        )
+    )
+
     return [
         # Contextualized answer:
         context_answer,
         # Non-contextualized answer:
-        get_openai_response(question=query, context_docs=[]),
+        non_context_answer,
         json.dumps([{
             "summary": item.get("summary"),
             "score": item.get("score")
-        } for item in context], indent=2)
+        } for item in similar_docs], indent=2)
     ]
 
 
@@ -25,7 +37,8 @@ with gr.Blocks(theme=Base(), title="Ask Job-Search Related Question") as demo:
         """
         # Ask Job-Search Related Question
         """)
-    textbox = gr.Textbox(label="Enter a question:")
+    query = gr.Textbox(label="Context search:")
+    prompt = gr.Textbox(label="ChatGPT prompt:")
     with gr.Row():
         button = gr.Button("Submit", variant="primary")
     with gr.Column():
@@ -34,7 +47,7 @@ with gr.Blocks(theme=Base(), title="Ask Job-Search Related Question") as demo:
         output2 = gr.Textbox(lines=1, max_lines=10,
                              label="Non-contextualized answer (without Atlas Vector Search):")
         output3 = gr.Code(label="Context used for my first answer", language="json")
-    button.click(query_data, textbox, outputs=[output1, output2, output3])
+    button.click(query_data, inputs=[ query, prompt], outputs=[output1, output2, output3])
 
 if __name__ == "__main__":
     demo.launch()
