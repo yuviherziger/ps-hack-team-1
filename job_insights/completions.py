@@ -18,7 +18,8 @@ def get_openai_response(question: str, context_docs: List[Dict]) -> str:
         messages=[
             *context_messages,
             {"role": "user", "content": question},
-        ]
+        ],
+        temperature=0.8
     )
     return response.choices[0].message.content
 
