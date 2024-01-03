@@ -9,7 +9,7 @@ pip install -r requirements.txt
 Run it (replace variable values first):
 
 ```shell
-OPENAI_API_KEY="..." MONGODB_URI="..." \
+OPENAI_API_KEY="..." MONGODB_URI="..." TOKENIZERS_PARALLELISM=true \
   python -m uvicorn job_insights.web:app --reload
 ```
 

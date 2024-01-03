@@ -15,7 +15,7 @@ def get_transformer_embeddings(query: str) -> Union[List[float], object]:
     return embeddings.tolist()
 
 
-def search_similar_docs(query: str) -> List[Dict]:
+def search_similar_docs(query: str, limit: int = 5) -> List[Dict]:
     query_embeddings: List = get_transformer_embeddings(query)
     db = mongo_client[db_name]
     coll = db[coll_name]
@@ -26,12 +26,12 @@ def search_similar_docs(query: str) -> List[Dict]:
                 "queryVector": query_embeddings,
                 "path": "embedding_summary",
                 "numCandidates": 100,
-                "limit": 2
+                "limit": limit
             }
         },
         {
             "$project": {
-                "vectorEmbedding": 0,
+                "embedding_summary": 0,
                 "_id": 0,
                 'score': {
                     '$meta': 'searchScore'
