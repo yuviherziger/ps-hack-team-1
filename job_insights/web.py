@@ -8,7 +8,5 @@ app = FastAPI()
 
 
 @app.get("/answer")
-def answer_question(query: str, context_length: Union[int, None] = 5):
-    return {
-        # "answer": get_answer(question=query, context_length=context_length)
-    }
+def answer_question(similar: str, prompt: str, context_length: Union[int, None] = 5):
+    return get_answer(similar=similar, prompt=prompt, context_length=context_length)
