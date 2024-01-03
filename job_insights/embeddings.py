@@ -33,8 +33,8 @@ def search_similar_docs(query: str, limit: int = 5) -> List[Dict]:
             "$project": {
                 "embedding_summary": 0,
                 "_id": 0,
-                'score': {
-                    '$meta': 'searchScore'
+                "score": {
+                    '$meta': 'vectorSearchScore'
                 }
             }
         }
