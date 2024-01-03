@@ -27,7 +27,9 @@ with gr.Blocks(theme=Base(), title="Ask Job-Search Related Question") as demo:
         """
         # Ask Job-Search Related Question
         """)
-    query = gr.Textbox(label="Context search:")
+    with gr.Row():    
+        query = gr.Textbox(label="Context search:")
+        limit = gr.Number(label="Context limit:", value=5)
     prompt = gr.Textbox(label="ChatGPT prompt:")
     with gr.Row():
         button = gr.Button("Submit", variant="primary")
@@ -37,7 +39,7 @@ with gr.Blocks(theme=Base(), title="Ask Job-Search Related Question") as demo:
         output2 = gr.Textbox(lines=1, max_lines=10,
                              label="Non-contextualized answer (without Atlas Vector Search):")
         output3 = gr.Code(label="Context used for my first answer", language="json")
-    button.click(query_data, inputs=[ query, prompt], outputs=[output1, output2, output3])
+    button.click(query_data, inputs=[ query, prompt,limit], outputs=[output1, output2, output3])
 
 if __name__ == "__main__":
     demo.launch()
