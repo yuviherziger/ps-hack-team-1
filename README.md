@@ -10,12 +10,7 @@ Run it (replace variable values first):
 
 ```shell
 OPENAI_API_KEY="..." MONGODB_URI="..." TOKENIZERS_PARALLELISM=true \
-  python -m uvicorn job_insights.web:app --reload
+  python job_insights/prompt_ui.py
 ```
 
-Query:
-
-```shell
-curl -sS \
-  http://localhost:8000/answer?query=What%20are%20the%20most%20common%20skills%20for%20a%20Java%20software%20engineer
-```
+Open [http://127.0.0.1:7860/](http://127.0.0.1:7860/) in your browser.
