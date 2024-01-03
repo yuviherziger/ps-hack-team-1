@@ -3,7 +3,7 @@ import json
 import gradio as gr
 from gradio.themes.base import Base
 from job_insights.embeddings import search_similar_docs
-from job_insights.completions import get_answer, get_openai_response
+from job_insights.completions import get_openai_response
 
 
 def query_data(query,prompt, context_length: int = 5):
