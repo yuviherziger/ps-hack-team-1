@@ -24,6 +24,6 @@ def get_openai_response(question: str, context_docs: List[Dict]) -> str:
     return response.choices[0].message.content
 
 
-def get_answer(question: str, context_length: int = 5) -> str:
+def get_answer(question: str, context_length: int = 5) -> (str, List[Dict]):
     similar_docs = search_similar_docs(query=question, limit=context_length)
-    return get_openai_response(question, similar_docs)
+    return get_openai_response(question, similar_docs), similar_docs
