@@ -23,6 +23,9 @@ def get_openai_response(question: str, context_docs: List[Dict]) -> str:
     return response.choices[0].message.content
 
 
-def get_answer(question: str, context_length: int = 5) -> str:
-    similar_docs = search_similar_docs(query=question, limit=context_length)
-    return get_openai_response(question, similar_docs)
+def get_answer(similar: str,prompt:str, context_length: int = 5) -> str:
+    similar_docs = search_similar_docs(query=similar, limit=context_length)
+    return {
+        "jobs": [{"title": doc.get("jobtitle")} for doc in similar_docs],
+        "openai": get_openai_response(prompt, similar_docs)
+    }
