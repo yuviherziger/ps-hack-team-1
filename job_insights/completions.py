@@ -8,13 +8,16 @@ from job_insights.embeddings import search_similar_docs
 openai_client = OpenAI()
 
 
-def get_openai_response(question: str, context_docs: List[Dict]) -> str:
+def get_openai_response(question: str, context_list: List[str]) -> str:
+    print(f"context_list: {context_list}")
+
     context_messages = [{
         "role": "user",
-        "content": "For context, here is a job posting summary: " + doc.get("summary"),
-    } for doc in context_docs]
+        "content": "For context, here is a job posting summary: " + context,
+    } for context in context_list]
     response: ChatCompletion = openai_client.chat.completions.create(
-        model="gpt-4",
+        # model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[
             *context_messages,
             {"role": "user", "content": question},
