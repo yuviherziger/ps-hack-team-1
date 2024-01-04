@@ -1,25 +1,26 @@
 import os
 
+from motor.motor_asyncio import AsyncIOMotorClient
 from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Union
-from pymongo import MongoClient
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 db_name = "hackathon"
 coll_name = "job_postings"
-mongo_client = MongoClient(os.environ.get("MONGODB_URI"))
+mongo_client = AsyncIOMotorClient(os.environ.get("MONGODB_URI"))
 
 
-def get_transformer_embeddings(query: str) -> Union[List[float], object]:
+async def get_transformer_embeddings(query: str) -> Union[List[float], object]:
     embeddings = model.encode(query, convert_to_tensor=True)
     return embeddings.tolist()
 
 
-def search_similar_docs(query: str, limit: int = 5) -> List[Dict]:
-    query_embeddings: List = get_transformer_embeddings(query)
+async def search_similar_docs(query: str, limit: int = 5) -> List[Dict]:
+    query_embeddings: List = await get_transformer_embeddings(query)
     db = mongo_client[db_name]
     coll = db[coll_name]
-    res = coll.aggregate([
+    docs = []
+    async for doc in coll.aggregate([
         {
             "$vectorSearch": {
                 "index": "job_index",
@@ -38,5 +39,6 @@ def search_similar_docs(query: str, limit: int = 5) -> List[Dict]:
                 }
             }
         }
-    ])
-    return list(res)
+    ]):
+        docs.append(doc)
+    return docs
